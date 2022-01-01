@@ -1,0 +1,20 @@
+{
+  "name": "twitchmc-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "none",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+		"emulators": "cd functions & firebase functions:config:get > .runtimeconfig.json & npm run build -- --watch | firebase emulators:start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlthalusAvan/TwitchMC.git"
+  },
+  "author": "AlthalusAvan",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/AlthalusAvan/TwitchMC/issues"
+  },
+  "homepage": "https://github.com/AlthalusAvan/TwitchMC#readme"
+}
