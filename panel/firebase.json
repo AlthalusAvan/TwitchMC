@@ -11,21 +11,21 @@
     "source": "functions"
   },
   "hosting": {
-    "public": "public",
+    "public": "web/public",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [			
+    "rewrites": [
       {
         "source": "**",
         "destination": "/index.html"
       },
-			{
-				"source": "checkAccess",
-				"fucntion": "checkAccess"
-			}
+      {
+        "source": "checkAccess",
+        "fucntion": "checkAccess"
+      }
     ]
   },
   "emulators": {
@@ -35,11 +35,11 @@
     "firestore": {
       "port": 8080
     },
-    "hosting": {
-      "port": 5000
-    },
     "ui": {
       "enabled": true
+    },
+    "auth": {
+      "port": 9099
     }
   }
 }

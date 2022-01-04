@@ -1,0 +1,30 @@
+{
+  "name": "twitchmc-web",
+  "version": "1.0.0",
+  "main": "none",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "emulators": "concurrently \"cd functions && firebase functions:config:get > .runtimeconfig.json && npm run build -- --watch\" \"firebase emulators:start --only functions,auth,firestore,ui\" \"cd web && npm start\"",
+    "dev": "npm run emulators",
+    "build:web": "cd web & npm run build",
+    "build:functions": "cd functions && npm run build",
+    "build": "npm run build:web && npm run build:functions",
+    "deploy:web": "npm run build:web && firebase deploy --only hosting",
+    "deploy:functions": "npm run build:functions && firebase deploy --only functions",
+    "deploy": "npm run build && firebase deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlthalusAvan/TwitchMC.git"
+  },
+  "author": "AlthalusAvan",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/AlthalusAvan/TwitchMC/issues"
+  },
+  "homepage": "https://github.com/AlthalusAvan/TwitchMC#readme",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^7.0.0"
+  }
+}
