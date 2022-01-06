@@ -1,17 +1,24 @@
 import React from "react";
 
-import { Box, Heading, LinkOverlay, Button } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Heading, Button, Link, Flex } from "@chakra-ui/react";
+import { Link as BrowserLink } from "react-router-dom";
 
-export default function About() {
+export default function Home() {
   return (
-    <Box>
-      <Heading as="h1" size="2xl">
+    <Flex
+      direction="column"
+      alignItems="center"
+      justify="center"
+      gap="1.5em"
+      h="100vh"
+      bg="green.600"
+    >
+      <Heading as="h1" size="lg" textColor="white">
         About
       </Heading>
-      <LinkOverlay as={RouterLink} to="/">
+      <Link as={BrowserLink} to="/">
         <Button>Home</Button>
-      </LinkOverlay>
-    </Box>
+      </Link>
+    </Flex>
   );
 }

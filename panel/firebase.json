@@ -11,7 +11,7 @@
     "source": "functions"
   },
   "hosting": {
-    "public": "web/public",
+    "public": "web/build",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -19,12 +19,20 @@
     ],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/api/checkAccess",
+        "function": "checkAccess"
       },
-      {
-        "source": "checkAccess",
-        "fucntion": "checkAccess"
+			{
+        "source": "/api/redirect",
+        "function": "redirect"
+      },
+			{
+        "source": "/api/token",
+        "function": "token"
+      },
+			{
+        "source": "!/api/**",
+        "destination": "/index.html"
       }
     ]
   },
