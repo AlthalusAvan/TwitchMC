@@ -5,7 +5,14 @@ import { db } from "../lib/firebase/firestore";
 import { auth } from "../lib/firebase/auth";
 import { DocumentData } from "@firebase/firestore";
 
-import { Heading, Flex, Text, CircularProgress, Image } from "@chakra-ui/react";
+import {
+  Heading,
+  Flex,
+  Text,
+  CircularProgress,
+  Image,
+  Button,
+} from "@chakra-ui/react";
 
 export default function Connect() {
   const user = auth.currentUser;
@@ -33,6 +40,11 @@ export default function Connect() {
     getUserInfo();
   }, [user, navigate]);
 
+  async function handleSignOut() {
+    await auth.signOut();
+    navigate("/login");
+  }
+
   return (
     <Flex
       direction="column"
@@ -57,6 +69,7 @@ export default function Connect() {
             {new Date(userInfo.created_at).toDateString()}
           </Text>
           <Text>Yeehaw</Text>
+          <Button onClick={handleSignOut}>Log Out</Button>
         </Flex>
       ) : (
         <>
