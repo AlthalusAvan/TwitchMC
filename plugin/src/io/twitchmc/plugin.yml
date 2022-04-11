@@ -4,7 +4,7 @@ author: AlthalusAvan
 main: io.twitchmc.TwitchMC
 api-version: 1.18
 commands:
-  register:
-    description: Register a server with the TwitchMC web panel
-    usage: /register
-    permission: twitchmc.register
+  twitchmc:
+    description: Use various TwitchMC commands
+    usage: "/twitchmc [register] [code]"
+    permission: twitchmc.all

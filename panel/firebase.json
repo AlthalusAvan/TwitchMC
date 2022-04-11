@@ -31,6 +31,10 @@
         "function": "token"
       },
 			{
+        "source": "/api/registerServer",
+        "function": "registerServer"
+      },
+			{
         "source": "!/api/**",
         "destination": "/index.html"
       }

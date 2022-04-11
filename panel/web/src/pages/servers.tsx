@@ -94,9 +94,11 @@ export default function Servers() {
       });
   }
 
-  function deleteServer(id: string) {
-    const docRef = doc(db, "servers", id);
-    deleteDoc(docRef);
+  function deleteServer(id: string, confirm = false) {
+    if (confirm) {
+      const docRef = doc(db, "servers", id);
+      deleteDoc(docRef);
+    }
   }
 
   return (
@@ -116,6 +118,7 @@ export default function Servers() {
                 <Th>Created At</Th>
                 <Th>Players Managed</Th>
                 <Th>Status</Th>
+                <Th>Code</Th>
                 <Th>Controls</Th>
               </Tr>
             </Thead>
@@ -144,11 +147,12 @@ export default function Servers() {
                     >
                       {item.status}
                     </Td>
+                    <Td>{item.code || ""}</Td>
                     <Td isNumeric>
                       <DeleteIcon
                         color="red.500"
                         cursor="pointer"
-                        onClick={() => deleteServer(item.id)}
+                        onClick={() => deleteServer(item.id, true)}
                       />
                     </Td>
                   </Tr>

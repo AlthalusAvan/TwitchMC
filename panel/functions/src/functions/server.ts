@@ -46,7 +46,7 @@ export async function registerServer(
     const docRef = serversRef.doc(server.id);
     const serverData = server.data();
 
-    serverData.status = "verified";
+    serverData.status = "Verified";
     delete serverData["code"];
 
     await docRef.set({ ...serverData });

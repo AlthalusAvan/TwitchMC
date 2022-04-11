@@ -2,7 +2,7 @@ import { Container } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useFirebaseAuth } from "../providers/authProvider";
-import NavBar from "./NavBar";
+import NavBar from "./navbar";
 
 interface LayoutProps {
   children: React.ReactElement;
@@ -21,7 +21,7 @@ export default function Layout({
 
   useEffect(() => {
     document.title = `${title} - TwitchMC`;
-  }, []);
+  }, [title]);
 
   useEffect(() => {
     if (requireAuth && !user) {

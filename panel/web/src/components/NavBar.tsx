@@ -35,9 +35,11 @@ export default function NavBar() {
 function Logo(props: any) {
   return (
     <Box {...props}>
-      <Text fontSize="lg" fontWeight="bold">
-        TwitchMC
-      </Text>
+      <Link as={ReactLink} to="/" _hover={{ textDecoration: "none" }}>
+        <Text fontSize="lg" fontWeight="bold">
+          TwitchMC
+        </Text>
+      </Link>
     </Box>
   );
 }
