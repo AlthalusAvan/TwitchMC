@@ -2,13 +2,24 @@ import {
   getAuth,
   signInWithCustomToken,
   connectAuthEmulator,
+  browserLocalPersistence,
+  setPersistence,
+  signOut as FireBaseSignOut,
 } from "firebase/auth";
+import { app } from "./app";
 
-export const auth = getAuth();
+export const auth = getAuth(app);
+
 if (process.env.NODE_ENV === "development") {
   connectAuthEmulator(auth, "http://localhost:9099");
 }
 
 export function signIn(token: string) {
-  return signInWithCustomToken(auth, token);
+  return setPersistence(auth, browserLocalPersistence).then(() => {
+    signInWithCustomToken(auth, token);
+  });
+}
+
+export function signOut() {
+  return FireBaseSignOut(auth);
 }

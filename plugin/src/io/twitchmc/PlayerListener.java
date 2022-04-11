@@ -1,8 +1,9 @@
-package app.web.twitchmc;
+package io.twitchmc;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -22,7 +23,11 @@ import java.util.Map;
 public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) throws IOException {
-        org.bukkit.entity.Player player = event.getPlayer();
+        Player player = event.getPlayer();
+
+        if (player.isOp()) {
+            return;
+        }
 
         String uuid = player.getUniqueId().toString();
 

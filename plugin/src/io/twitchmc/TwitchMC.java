@@ -1,4 +1,4 @@
-package app.web.twitchmc;
+package io.twitchmc;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,6 +13,8 @@ public class TwitchMC extends JavaPlugin {
         saveDefaultConfig();
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         instance = this;
+
+        this.getCommand("register").setExecutor(new CommandRegister());
     }
 
     @Override

@@ -1,0 +1,10 @@
+name: TwitchMC
+version: 1.0
+author: AlthalusAvan
+main: io.twitchmc.TwitchMC
+api-version: 1.18
+commands:
+  register:
+    description: Register a server with the TwitchMC web panel
+    usage: /register
+    permission: twitchmc.register

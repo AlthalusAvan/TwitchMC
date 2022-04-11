@@ -26,5 +26,9 @@
   "description": "",
   "devDependencies": {
     "concurrently": "^7.0.0"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^1.1.7",
+    "firebase-tools": "^10.6.0"
   }
 }

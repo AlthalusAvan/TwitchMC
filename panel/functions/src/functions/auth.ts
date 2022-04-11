@@ -1,6 +1,5 @@
 import * as functions from "firebase-functions";
 import cookieParser = require("cookie-parser");
-import crypto = require("crypto");
 import { getTwitchUser, twitchOAuth2Client } from "../lib/twitch";
 import { createFirebaseAccount } from "../lib/firebaseAuth";
 
@@ -23,19 +22,25 @@ export function redirect(
   const authorizationCode = twitchOAuth2Client();
 
   cookieParser()(req, res, () => {
-    const state =
-      req.cookies.__session || crypto.randomBytes(20).toString("hex");
+    const state = req.query.redirectTo?.toString() || "";
+
     res.cookie("__session", state.toString(), {
       maxAge: 3600000,
       httpOnly: true,
     });
-    const redirectUri = authorizationCode.authorizeURL({
-      client_id: functions.config().twitch.client_id,
-      redirect_uri: OAUTH_REDIRECT_URI,
-      scope: OAUTH_SCOPES,
-      state: state,
-    });
-    res.redirect(redirectUri);
+
+    try {
+      const redirectUri = authorizationCode.authorizeURL({
+        client_id: functions.config().twitch.client_id,
+        redirect_uri: OAUTH_REDIRECT_URI,
+        scope: OAUTH_SCOPES,
+        state: state,
+      });
+
+      res.redirect(redirectUri);
+    } catch (error) {
+      res.redirect(OAUTH_REDIRECT_URI);
+    }
   });
 }
 
@@ -52,36 +57,38 @@ export async function token(
   res: functions.Response
 ): Promise<void> {
   const authorizationCode = twitchOAuth2Client();
-  res.set({ "Access-Control-Allow-Origin": "*" });
 
   try {
-    if (!req.query.state) {
-      throw new Error("State validation failed");
-    }
-
     const options = {
       code: req.query.code?.toString() || "",
       grant_type: "authorization_code",
       redirect_uri: OAUTH_REDIRECT_URI,
     };
 
-    const accessToken = await authorizationCode.getToken(options);
+    const accessToken = await authorizationCode
+      .getToken(options)
+      .catch((error) => {
+        res.jsonp({ error: error.output.payload.message || error });
+        return null;
+      });
 
-    const twitchUser = await getTwitchUser(accessToken.token);
+    if (accessToken) {
+      const twitchUser = await getTwitchUser(accessToken.token);
 
-    // Create a Firebase account and get the Custom Auth Token.
-    if (twitchUser) {
-      const firebaseToken = await createFirebaseAccount(twitchUser);
+      // Create a Firebase account and get the Custom Auth Token.
+      if (twitchUser) {
+        const firebaseToken = await createFirebaseAccount(twitchUser);
 
-      // Serve an HTML page that signs the user in and updates the user profile.
-      res.jsonp({ token: firebaseToken });
-      return;
-    } else {
-      res.send("Twitch user not found");
+        // Serve an HTML page that signs the user in and updates the user profile.
+        res.set({ "Access-Control-Allow-Origin": "*" });
+        res.jsonp({ token: firebaseToken });
+        return;
+      } else {
+        res.set({ "Access-Control-Allow-Origin": "*" });
+        res.send("Twitch user not found");
+      }
     }
   } catch (error) {
-    console.error(error);
-    res.sendStatus(500).jsonp({ error: error });
-    return;
+    res.jsonp({ error: error });
   }
 }

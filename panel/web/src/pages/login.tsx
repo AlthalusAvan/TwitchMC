@@ -1,9 +1,10 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { app } from "../lib/firebase/app";
-import { getApiBaseUrl } from "../lib/firebase/functions";
-
+import {
+  useSearchParams,
+  useNavigate,
+  useLocation,
+  Location,
+} from "react-router-dom";
 import {
   Heading,
   Button,
@@ -11,95 +12,116 @@ import {
   Flex,
   Image,
   CircularProgress,
+  Text,
 } from "@chakra-ui/react";
+
 import TwitchLogo from "../assets/twitch.svg";
+
 import { signIn } from "../lib/firebase/auth";
+import { getAuthToken } from "../lib/api/auth";
+import { getApiBaseUrl } from "../lib/firebase/functions";
+import { useFirebaseAuth } from "../providers/authProvider";
+import Layout from "../components/layout";
+
+interface LoginLocationState {
+  from: Location | null;
+}
 
 export default function Login() {
   const [searchParams] = useSearchParams();
+
   const code = searchParams.get("code");
   const state = searchParams.get("state");
+
   const apiBaseUrl = getApiBaseUrl();
+
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = location.state as LoginLocationState;
+  const redirectTo =
+    searchParams.get("state") || locationState?.from?.pathname || "/connect";
 
   const [token, setToken] = useState("");
 
+  const user = useFirebaseAuth();
+
   useEffect(() => {
-    async function getToken() {
-      if (code && state && token.length < 1) {
-        axios
-          .get(`${apiBaseUrl}/token`, {
-            params: {
-              code: code,
-              state: state,
-            },
-          })
-          .then((res) => {
-            setToken(res.data.token);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }
+    if (user) {
+      navigate(redirectTo, { replace: true });
     }
+  });
 
-    getToken();
-  }, [code, state, token, apiBaseUrl]);
+  useEffect(() => {
+    if (code && token.length < 1) {
+      getAuthToken(code).then((token) => {
+        setToken(token);
+      });
+    }
+  }, [code, state, token]);
 
-  const [authError, setAuthError] = useState("");
+  const [authError, setAuthError] = useState<boolean | string>(false);
 
   useEffect(() => {
     if (token.length > 1) {
       signIn(token)
         .then(() => {
-          navigate("/connect");
+          navigate(redirectTo);
         })
         .catch((error) => {
           setAuthError("There was an error logging in, please try again later");
           console.error(error);
         });
     }
-  }, [token]);
+  }, [token, navigate, redirectTo]);
 
-  if (!code || !state) {
+  if (!code) {
     return (
+      <Layout title="Log In">
+        <Flex
+          direction="column"
+          alignItems="center"
+          justify="center"
+          gap="1.5em"
+          minH="xl"
+        >
+          {authError && (
+            <Text color="red.500">
+              Error logging in: {authError.toString()}
+            </Text>
+          )}
+          <Heading as="h1" size="lg" textColor="black">
+            Please log in with your Twitch account to get started
+          </Heading>
+          <Link href={`${apiBaseUrl}/redirect?redirectTo=${redirectTo}`}>
+            <Button
+              leftIcon={
+                <Image boxSize="20px" src={TwitchLogo} alt="Twitch Logo" />
+              }
+              colorScheme="purple"
+              textColor="white"
+            >
+              Login with Twitch
+            </Button>
+          </Link>
+        </Flex>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout title="Log In">
       <Flex
         direction="column"
         alignItems="center"
         justify="center"
         gap="1.5em"
-        h="100vh"
+        minH="xl"
       >
-        <Heading as="h1" size="lg" textColor="black">
-          Please log in with your Twitch account to get started
+        <Heading as="h1" size="lg">
+          Logging you in...
         </Heading>
-        <Link href={`${apiBaseUrl}/redirect`}>
-          <Button
-            leftIcon={
-              <Image boxSize="20px" src={TwitchLogo} alt="Twitch Logo" />
-            }
-            colorScheme="purple"
-            textColor="white"
-          >
-            Login with Twitch
-          </Button>
-        </Link>
+        <CircularProgress isIndeterminate color="purple.600" />
       </Flex>
-    );
-  }
-
-  return (
-    <Flex
-      direction="column"
-      alignItems="center"
-      justify="center"
-      gap="1.5em"
-      h="100vh"
-    >
-      <Heading as="h1" size="lg">
-        Logging you in...
-      </Heading>
-      <CircularProgress isIndeterminate color="purple.600" />
-    </Flex>
+    </Layout>
   );
 }

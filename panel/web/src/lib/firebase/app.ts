@@ -1,7 +1,11 @@
 // Initialise Firebase
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import {
+  AppCheck,
+  initializeAppCheck,
+  ReCaptchaV3Provider,
+} from "firebase/app-check";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA4dXf5A-bxzQ0sEPY3LoJcnSkTj0yaoM4",
@@ -16,10 +20,16 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const analytics = getAnalytics(app);
 
-export const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider("6Le4ju8dAAAAAI3nfQfBJgubsKKRxmaw8IsQ8G5r"),
+export let appCheck: null | AppCheck = null;
 
-  // Optional argument. If true, the SDK automatically refreshes App Check
-  // tokens as needed.
-  isTokenAutoRefreshEnabled: true,
-});
+if (process.env.NODE_ENV !== "development") {
+  appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(
+      "6Le4ju8dAAAAAI3nfQfBJgubsKKRxmaw8IsQ8G5r"
+    ),
+
+    // Optional argument. If true, the SDK automatically refreshes App Check
+    // tokens as needed.
+    isTokenAutoRefreshEnabled: true,
+  });
+}
