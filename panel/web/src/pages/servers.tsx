@@ -16,37 +16,41 @@ import {
   Heading,
   Flex,
   Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
   Input,
-  Skeleton,
   Container,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { functions } from "../lib/firebase/functions";
 import Layout from "../components/layout";
 import { MCServer } from "../types/server";
-import { DeleteIcon } from "@chakra-ui/icons";
+import ServersTable from "../components/servers/serversTable";
+import { useFirebaseAuth } from "../providers/authProvider";
+import DeleteModal from "../components/servers/deleteModal";
+import NewServerModal from "../components/servers/newServerModal";
 
 export default function Servers() {
-  const user = auth.currentUser;
+  const user = useFirebaseAuth();
   const navigate = useNavigate();
 
+  // State for server data from Firebase
   const [serverData, setServerData] = useState<MCServer[] | null>(null);
+
+  // State and Refs for new server form
   const newServerName = useRef<HTMLInputElement>(null);
   const [newServerError, setNewServerError] = useState("");
-  const [processingNewServer, setProcessingNewServer] = useState(false);
+  const newServerDisclosure = useDisclosure();
+  const [newServer, setNewServer] = useState<MCServer | null>(null);
 
+  // Controllers for Delete Model
+  const [serverToDelete, setServerToDelete] = useState<MCServer | null>(null);
+  const deleteModalDisclosure = useDisclosure();
+
+  // Get server data on load
   useEffect(() => {
     async function getServers() {
       if (user) {
         const serversRef = collection(db, "servers");
-        console.log(user.uid);
         const q = query(
           serversRef,
           where("user", "==", user.uid),
@@ -72,25 +76,25 @@ export default function Servers() {
 
     if (newServerName.current && newServerName.current.value) {
       setNewServerError("");
-      setProcessingNewServer(true);
+      newServerDisclosure.onOpen();
     } else {
       setNewServerError("Please provide a server name");
       return;
     }
 
     const createServer = httpsCallable(functions, "createServer");
+
     createServer({ name: newServerName.current.value })
       .then((result) => {
         if (newServerName.current) {
           newServerName.current.value = "";
         }
-        console.log(result);
-        setProcessingNewServer(false);
+
+        setNewServer(result.data as unknown as MCServer);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setNewServerError(error.toString());
-        setProcessingNewServer(false);
       });
   }
 
@@ -98,6 +102,15 @@ export default function Servers() {
     if (confirm) {
       const docRef = doc(db, "servers", id);
       deleteDoc(docRef);
+    } else {
+      if (serverData) {
+        const server = serverData?.find((item) => item.id === id);
+
+        if (server) {
+          setServerToDelete(server);
+          deleteModalDisclosure.onOpen();
+        }
+      }
     }
   }
 
@@ -108,67 +121,17 @@ export default function Servers() {
           <Heading as="h1" size="lg" textAlign="center">
             Manage Servers
           </Heading>
-          <Table variant="simple" margin={0}>
-            <TableCaption placement="top">
-              Here are all of the servers you manage
-            </TableCaption>
-            <Thead>
-              <Tr>
-                <Th>Server Name</Th>
-                <Th>Created At</Th>
-                <Th>Players Managed</Th>
-                <Th>Status</Th>
-                <Th>Code</Th>
-                <Th>Controls</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {!serverData && (
-                <Tr>
-                  {[0, 0, 0, 0, 0].map((item) => (
-                    <Td>
-                      <Skeleton height="20px" />
-                    </Td>
-                  ))}
-                </Tr>
-              )}
-              {serverData &&
-                serverData.map((item: MCServer) => (
-                  <Tr>
-                    <Td>{item.name}</Td>
-                    <Td>
-                      {new Date(item.createdAt.seconds * 1000).toLocaleString()}
-                    </Td>
-                    <Td isNumeric>{item.playersManaged}</Td>
-                    <Td
-                      color={
-                        item.status === "Verified" ? "green.500" : "orange.500"
-                      }
-                    >
-                      {item.status}
-                    </Td>
-                    <Td>{item.code || ""}</Td>
-                    <Td isNumeric>
-                      <DeleteIcon
-                        color="red.500"
-                        cursor="pointer"
-                        onClick={() => deleteServer(item.id, true)}
-                      />
-                    </Td>
-                  </Tr>
-                ))}
-            </Tbody>
-          </Table>
+          <ServersTable serverData={serverData} deleteServer={deleteServer} />
           <form onSubmit={(e) => addServer(e)}>
             <Flex gap={2}>
               <Input
                 isInvalid={newServerError.length > 0}
-                isDisabled={processingNewServer}
+                isDisabled={newServerDisclosure.isOpen}
                 placeholder="Server Name"
                 ref={newServerName}
               />
               <Button
-                isLoading={processingNewServer}
+                isLoading={newServerDisclosure.isOpen}
                 loadingText="Adding..."
                 type="submit"
                 colorScheme="purple"
@@ -180,6 +143,16 @@ export default function Servers() {
               <Text color="red">{newServerError}</Text>
             )}
           </form>
+          {serverToDelete && (
+            <DeleteModal
+              {...deleteModalDisclosure}
+              server={serverToDelete}
+              deleteServer={deleteServer}
+            />
+          )}
+          {newServer && (
+            <NewServerModal {...newServerDisclosure} newServer={newServer} />
+          )}
         </Flex>
       </Container>
     </Layout>

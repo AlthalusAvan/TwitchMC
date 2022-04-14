@@ -124,5 +124,5 @@ export async function createServer(
     );
   });
 
-  return (await res.get()).data();
+  return { ...(await res.get()).data(), id: res.id };
 }
