@@ -1,7 +1,6 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { db } from "../lib/firebase/firestore";
-import { auth } from "../lib/firebase/auth";
 import { doc, deleteDoc } from "firebase/firestore";
 import {
   collection,
