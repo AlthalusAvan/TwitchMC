@@ -41,7 +41,7 @@ function NewServerModal({
   }, [newServer]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>New Server Setup</ModalHeader>
