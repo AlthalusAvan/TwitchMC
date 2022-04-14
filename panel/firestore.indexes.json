@@ -1,7 +1,7 @@
 {
   "indexes": [
 		{ 
-      "collectionGroup": "posts",
+      "collectionGroup": "servers",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "user", "order": "ASCENDING" },
