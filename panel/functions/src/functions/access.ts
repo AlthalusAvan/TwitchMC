@@ -108,13 +108,13 @@ export async function checkAccess(
     serverData.user.split(":")[1]
   );
 
-  if (!serverData.uuids.includes("uuid")) {
+  if (!serverData.uuids || !serverData.uuids.includes("uuid")) {
     const uuids = serverData.uuids;
     uuids.push(uuid);
 
     serversRef.doc(serverId).update({
       uuids: uuids,
-      playersManage: serverData.playersManaged + 1,
+      playersManaged: serverData.playersManaged + 1,
     });
   }
 
