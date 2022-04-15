@@ -103,14 +103,20 @@ export async function checkAccess(
     return;
   }
 
-  console.log(userData.id, serverData.user.split(":")[1]);
-
   const userHasAccess = await getSubscription(
     userData.id,
     serverData.user.split(":")[1]
   );
 
-  console.log(userHasAccess);
+  if (!serverData.uuids.includes("uuid")) {
+    const uuids = serverData.uuids;
+    uuids.push(uuid);
+
+    serversRef.doc(serverId).update({
+      uuids: uuids,
+      playersManage: serverData.playersManaged + 1,
+    });
+  }
 
   res.send({
     access: userHasAccess,

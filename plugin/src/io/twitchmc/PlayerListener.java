@@ -35,10 +35,10 @@ public class PlayerListener implements Listener {
 
         Bukkit.getLogger().info(ChatColor.BLUE + uuid + " has joined, checking access");
 
-        boolean isServerVerified = config.isSet("server_id");
+        boolean isServerVerified = config.getString("server_id").length() > 0;
 
         if (!isServerVerified) {
-            player.kickPlayer("This server has not been verified with TwitchMC yet. Please contact a server admin - or if you are a server admin, head to twitchmc.io");
+            player.kickPlayer("This server has not been verified with TwitchMC yet. Please contact a server admin - or if you are a server admin, head to https://twitchmc.io/servers");
         }
 
 
