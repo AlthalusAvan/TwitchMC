@@ -9,6 +9,12 @@ admin.initializeApp();
 
 exports.redirect = functions.https.onRequest(redirect);
 exports.token = functions.https.onRequest(token);
-exports.checkAccess = functions.https.onRequest(checkAccess);
 exports.registerServer = functions.https.onRequest(registerServer);
 exports.createServer = functions.https.onCall(createServer);
+
+exports.checkAccess = functions
+  .runWith({
+    // Keep 1 instance warm for this latency-critical function
+    minInstances: 1,
+  })
+  .https.onRequest(checkAccess);
