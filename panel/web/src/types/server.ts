@@ -9,4 +9,5 @@ export interface MCServer {
   playersManaged: number;
   status: "Awaiting Verification" | "Verified";
   user: string;
+  uuids: string[];
 }

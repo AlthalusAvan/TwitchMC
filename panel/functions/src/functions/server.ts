@@ -115,6 +115,7 @@ export async function createServer(
     createdAt: firestore.Timestamp.now(),
     status: "Awaiting Verification",
     playersManaged: 0,
+    uuids: [],
   };
 
   const res = await serversRef.add(serverData).catch((error) => {

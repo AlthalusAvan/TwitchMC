@@ -2,6 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import crypto = require("crypto");
 import { getSubscription } from "../lib/twitch";
+import { MCServer } from "../types/server";
 
 /**
  * Queries to see if a user is currently subscribed to the owner of the server
@@ -91,7 +92,7 @@ export async function checkAccess(
   }
 
   const userData = userQuery.docs[0].data();
-  const serverData = server.data();
+  const serverData = server.data() as MCServer | undefined;
 
   if (!serverData) {
     res.send({
@@ -108,13 +109,14 @@ export async function checkAccess(
     serverData.user.split(":")[1]
   );
 
-  if (!serverData.uuids || !serverData.uuids.includes("uuid")) {
-    const uuids = serverData.uuids;
+  const uuids = serverData.uuids;
+
+  if (!uuids.includes(uuid)) {
     uuids.push(uuid);
 
     serversRef.doc(serverId).update({
       uuids: uuids,
-      playersManaged: serverData.playersManaged + 1,
+      playersManaged: uuids,
     });
   }
 
