@@ -55,3 +55,51 @@ export async function getTwitchUser(
     return false;
   }
 }
+
+/**
+ *
+ * @param {string} userId - the ID of the user to check
+ * @param {string} channelId - the ID of the Twitch channel to check against
+ * @return {TwitchUser}
+ */
+export async function getSubscription(
+  userId: string,
+  channelId: string
+): Promise<boolean> {
+  try {
+    const reqUrl = new URL("https://api.twitch.tv/helix/subscriptions/user");
+
+    const params: { [key: string]: string } = {
+      broadcaster_id: channelId,
+      user_id: userId,
+    };
+
+    Object.keys(params).forEach((key) =>
+      reqUrl.searchParams.append(key, params[key])
+    );
+
+    const response = await fetch(reqUrl, {
+      method: "GET",
+      headers: {
+        "Client-Id": functions.config().twitch.client_id,
+        Authorization: "Bearer " + functions.config().twitch.token,
+      },
+    });
+
+    if (response.status === 200) {
+      return true;
+    }
+
+    if (response.status === 404) {
+      return false;
+    }
+
+    console.error(
+      `Error getting subscription for user ID ${userId} to channel ${channelId} - Twitch API returned: ${await response.text()}`
+    );
+  } catch (error) {
+    console.error(error);
+  }
+
+  return false;
+}

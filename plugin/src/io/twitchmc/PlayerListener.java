@@ -21,8 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerListener implements Listener {
-    @EventHandler
+     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) throws IOException {
+        FileConfiguration config = TwitchMC.instance.getConfig();
+
         Player player = event.getPlayer();
 
         if (player.isOp()) {
@@ -31,7 +33,14 @@ public class PlayerListener implements Listener {
 
         String uuid = player.getUniqueId().toString();
 
-        Bukkit.getLogger().info(ChatColor.BLUE + uuid + " has joined");
+        Bukkit.getLogger().info(ChatColor.BLUE + uuid + " has joined, checking access");
+
+        boolean isServerVerified = config.isSet("server_id");
+
+        if (!isServerVerified) {
+            player.kickPlayer("This server has not been verified with TwitchMC yet. Please contact a server admin - or if you are a server admin, head to twitchmc.io");
+        }
+
 
         String accessCheck = "";
         try {
@@ -47,11 +56,11 @@ public class PlayerListener implements Listener {
         if (!access) {
             boolean linked = result.getBoolean("linked");
             if (linked) {
-                player.kickPlayer("Your Twitch subscription has expired! Please renew your subscription, or visit https://twitch-mc.web.app if you need to link a different account.");
+                player.kickPlayer("You don't have an active subscription to the streamer that owns this server! Please renew your subscription, or visit https://twitchmc.io if you need to link a different account.");
             } else {
                 String code = result.getString("code");
 
-                player.kickPlayer("You need to link your Twitch account in order to play on this server! Please visit https://twitch-mc.web.app/connect and use code: " + code);
+                player.kickPlayer("You need to link your Twitch account in order to play on this server! Please visit https://twitchmc.io/connect and use code: " + code);
             }
         }
 
@@ -66,10 +75,12 @@ public class PlayerListener implements Listener {
         FileConfiguration config = TwitchMC.instance.getConfig();
 
         String apiDomain = config.getString("api_domain");
+        String serverId = config.getString("server_id");
 
         // form parameters
         Map<Object, Object> data = new HashMap<>();
         data.put("uuid", uuid);
+        data.put("serverId", serverId);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(buildFormDataFromMap(data))

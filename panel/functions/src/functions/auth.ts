@@ -7,7 +7,7 @@ const OAUTH_REDIRECT_URI = process.env.FUNCTIONS_EMULATOR
   ? "http://localhost:3000/login"
   : "https://twitchmc.io/login";
 
-const OAUTH_SCOPES = "user:read:email";
+const OAUTH_SCOPES = ["user:read:email", "user:read:subscriptions"];
 
 /**
  * Redirects the User to the Twitch authentication consent screen. Also the 'state' cookie is set for later state
