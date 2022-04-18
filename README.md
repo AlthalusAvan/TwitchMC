@@ -45,3 +45,7 @@ Please report bugs and issues here on Github in the [Issues](https://github.com/
 ### Can I help with this project?
 
 Yes, absolutely - This project was made pretty quickly, so there will be a lot of room to improve.. We're happy to take pull requests from anyone that can contribute. See our [Github Project Board](https://github.com/AlthalusAvan/TwitchMC/projects/1) for ideas on improvements you can help with.
+
+### Credits
+
+Thanks to [FezVrasta](https://gist.github.com/FezVrasta) and [talk2MeGooseman](https://gist.github.com/talk2MeGooseman) for their Gists - [here](https://gist.github.com/FezVrasta/57d29cd2bbc4ed80e169780035f748cf) and [here](https://gist.github.com/FezVrasta/57d29cd2bbc4ed80e169780035f748cf). Almost all of the code used for the Twitch OAuth comes from these two.
