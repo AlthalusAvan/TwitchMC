@@ -21,7 +21,7 @@ export default function Home() {
             Welcome to TwitchMC
           </Heading>
           <Text>
-            This project is still in develpoment - if you notice any issues,
+            This project is still in development - if you notice any issues,
             please let the moderators of the server you play on know! More
             information will be added to this page over time, but for now you
             can learn more on{" "}
