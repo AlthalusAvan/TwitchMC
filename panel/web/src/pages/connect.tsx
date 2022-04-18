@@ -17,6 +17,8 @@ import {
   Container,
   Input,
   Button,
+  Box,
+  Code,
 } from "@chakra-ui/react";
 import { useFirebaseAuth } from "../providers/authProvider";
 import Layout from "../components/layout";
@@ -111,14 +113,7 @@ export default function Connect() {
           Welcome, {user?.displayName}
         </Heading>
         {userInfo ? (
-          <Container
-            display="flex"
-            direction="column"
-            justify="center"
-            align="center"
-            gap={4}
-            maxW="2xl"
-          >
+          <Container maxW="2xl">
             {userInfo.uuid ? (
               <Text align="justify">
                 You have linked your Minecraft account successfully! You can now
@@ -157,6 +152,25 @@ export default function Connect() {
                 </form>
               </Flex>
             )}
+            <Box
+              shadow="lg"
+              mt="10"
+              p="4"
+              border="1px"
+              borderColor="gray.50"
+              rounded="md"
+            >
+              <Flex direction="column" gap="2">
+                <Heading as="h2" size="md">
+                  Don't have a code yet?
+                </Heading>
+                <Text>
+                  If you haven't been given a code yet by a TwitchMC-enabled
+                  server, you can use our test server here:
+                </Text>
+                <Code p="2">198.20.126.92:25588</Code>
+              </Flex>
+            </Box>
           </Container>
         ) : (
           <>
