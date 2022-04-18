@@ -6,7 +6,9 @@ Need help? Find us on [Discord](https://discord.gg/YzsTNYXE).
 
 ### How do I install it on my server?
 
-The project is not yet available for public use - it's currently in testing on a few beta servers, once I'm confident in its performance and reliability I'll start publishing releases here. If you want to test it in the meantime, you're more than welcome to build the plugin from source yourself.
+The project is not yet ready for production servers - it's still in the testing phase on a few servers.
+
+That said, if you want to try the current version on a test server, head to the [Releases](https://github.com/AlthalusAvan/TwitchMC/releases) section to download the latest JAR file.
 
 ### How does it work?
 
