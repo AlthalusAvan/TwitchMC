@@ -116,7 +116,7 @@ export async function checkAccess(
 
     serversRef.doc(serverId).update({
       uuids: uuids,
-      playersManaged: uuids,
+      playersManaged: uuids.length,
     });
   }
 
