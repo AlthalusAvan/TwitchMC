@@ -1,5 +1,5 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { db } from "../lib/firebase/firestore";
 import { doc, deleteDoc } from "firebase/firestore";
 import {
