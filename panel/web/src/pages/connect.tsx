@@ -150,27 +150,28 @@ export default function Connect() {
                     </Text>
                   )}
                 </form>
+
+                <Box
+                  shadow="lg"
+                  mt="10"
+                  p="4"
+                  border="1px"
+                  borderColor="gray.50"
+                  rounded="md"
+                >
+                  <Flex direction="column" gap="2">
+                    <Heading as="h2" size="md">
+                      Don't have a code yet?
+                    </Heading>
+                    <Text>
+                      If you haven't been given a code yet by a TwitchMC-enabled
+                      server, you can use our test server here:
+                    </Text>
+                    <Code p="2">198.20.126.92:25588</Code>
+                  </Flex>
+                </Box>
               </Flex>
             )}
-            <Box
-              shadow="lg"
-              mt="10"
-              p="4"
-              border="1px"
-              borderColor="gray.50"
-              rounded="md"
-            >
-              <Flex direction="column" gap="2">
-                <Heading as="h2" size="md">
-                  Don't have a code yet?
-                </Heading>
-                <Text>
-                  If you haven't been given a code yet by a TwitchMC-enabled
-                  server, you can use our test server here:
-                </Text>
-                <Code p="2">198.20.126.92:25588</Code>
-              </Flex>
-            </Box>
           </Container>
         ) : (
           <>
