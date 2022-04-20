@@ -1,5 +1,7 @@
 # TwitchMC
 
+** Public control panel instance available at [TwitchMC.io](https://twitchmc.io) **
+
 A Spigot Plugin and Firebase-powered API allowing Twitch streamers to easily create subscriber-only Minecraft servers.
 
 Need help? Find us on [Discord](https://discord.gg/YzsTNYXE).
