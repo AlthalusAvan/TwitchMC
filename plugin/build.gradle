@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+group = "io.twitchmc"
+version = "0.1.0"
+archivesBaseName = "twitchmc"
+
+java {
+    version = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "spigotmc"
+        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    }
+}
+
+dependencies {
+    implementation "org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT"
+}
