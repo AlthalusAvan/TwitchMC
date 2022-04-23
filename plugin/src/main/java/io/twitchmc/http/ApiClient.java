@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.twitchmc.model.CheckAccessResponse;
 import io.twitchmc.model.ServerRegisterResponse;
+import io.twitchmc.util.RecordTypeAdapterFactory;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,14 +16,17 @@ import java.net.http.HttpResponse;
 public class ApiClient {
 	private static final String USER_AGENT = "TwitchMC/0.1.0";
 
-	private final Gson gson = new GsonBuilder().create();
+	private final Gson gson = new GsonBuilder()
+			.registerTypeAdapterFactory(new RecordTypeAdapterFactory())
+			.create();
+
 	private final HttpClient httpClient = HttpClient.newBuilder()
 			.version(HttpClient.Version.HTTP_2)
 			.build();
 
-	private final URI apiDomain;
+	private final String apiDomain;
 
-	public ApiClient(URI apiDomain) {
+	public ApiClient(String apiDomain) {
 		this.apiDomain = apiDomain;
 	}
 
@@ -30,11 +34,9 @@ public class ApiClient {
 		var data = new FormData()
 				.add("code", code);
 
-//		Bukkit.getLogger().info(apiDomain + "/registerServer");
-
 		HttpRequest request = HttpRequest.newBuilder()
 				.POST(data.toBody())
-				.uri(apiDomain.resolve("/registerServer"))
+				.uri(URI.create(apiDomain + "/registerServer"))
 				.setHeader("User-Agent", USER_AGENT)
 				.header("Content-Type", "application/x-www-form-urlencoded")
 				.build();
@@ -52,7 +54,7 @@ public class ApiClient {
 
 		HttpRequest request = HttpRequest.newBuilder()
 				.POST(data.toBody())
-				.uri(apiDomain.resolve("/checkAccess"))
+				.uri(URI.create(apiDomain + "/checkAccess"))
 				.setHeader("User-Agent", USER_AGENT)
 				.header("Content-Type", "application/x-www-form-urlencoded")
 				.build();

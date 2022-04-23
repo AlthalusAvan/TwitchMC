@@ -8,8 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.net.URI;
-
 public class TwitchMC extends JavaPlugin {
 	@Override
 	public void onEnable() {
@@ -19,7 +17,7 @@ public class TwitchMC extends JavaPlugin {
 		var configHolder = new ConfigHolder(this);
 		var config = getConfig();
 
-        var apiDomain = URI.create(config.getString("api_domain"));
+        var apiDomain = config.getString("api_domain");
         var apiClient = new ApiClient(apiDomain);
 		var scheduler = new Scheduler(this);
 
