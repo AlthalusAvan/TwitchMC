@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "io.twitchmc"
-version = "0.1.0"
+version = "1.1.0"
 archivesBaseName = "twitchmc"
 
 java {
@@ -22,4 +22,12 @@ repositories {
 
 dependencies {
     implementation "org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT"
+}
+
+processResources {
+    filesMatching("**/*.yml") {
+        it.expand(["version": version])
+    }
+
+    outputs.upToDateWhen { false }
 }

@@ -14,8 +14,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ApiClient {
-	private static final String USER_AGENT = "TwitchMC/0.1.0";
-
 	private final Gson gson = new GsonBuilder()
 			.registerTypeAdapterFactory(new RecordTypeAdapterFactory())
 			.create();
@@ -25,9 +23,11 @@ public class ApiClient {
 			.build();
 
 	private final String apiDomain;
+	private final String userAgent;
 
-	public ApiClient(String apiDomain) {
+	public ApiClient(String apiDomain, String version) {
 		this.apiDomain = apiDomain;
+		this.userAgent = "TwitchMC/%s".formatted(version);
 	}
 
 	public ServerRegisterResponse registerServer(String code) throws IOException, InterruptedException {
@@ -37,7 +37,7 @@ public class ApiClient {
 		HttpRequest request = HttpRequest.newBuilder()
 				.POST(data.toBody())
 				.uri(URI.create(apiDomain + "/registerServer"))
-				.setHeader("User-Agent", USER_AGENT)
+				.setHeader("User-Agent", userAgent)
 				.header("Content-Type", "application/x-www-form-urlencoded")
 				.build();
 
@@ -55,7 +55,7 @@ public class ApiClient {
 		HttpRequest request = HttpRequest.newBuilder()
 				.POST(data.toBody())
 				.uri(URI.create(apiDomain + "/checkAccess"))
-				.setHeader("User-Agent", USER_AGENT)
+				.setHeader("User-Agent", userAgent)
 				.header("Content-Type", "application/x-www-form-urlencoded")
 				.build();
 
