@@ -34,6 +34,7 @@ public class PlayerListener implements Listener {
 		if (!isServerVerified) {
 			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
 					"This server has not been verified with TwitchMC yet. Please contact a server admin - or if you are a server admin, head to https://twitchmc.io/servers");
+			return;
 		}
 
 		try {
