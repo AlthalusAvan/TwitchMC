@@ -61,8 +61,8 @@ public class CommandRegister implements CommandExecutor {
 		Futures.addCallback(fut, new FutureCallback<>() {
 			@Override
 			public void onSuccess(ServerRegisterResponse result) {
-				if (result.error().isPresent()) {
-					var error = result.error().get();
+				if (result.error() != null) {
+					var error = result.error();
 
 					Bukkit.getLogger().warning("Error registering server with TwitchMC, code: %s - description: %s"
 							.formatted(error.code(), error.description()));
