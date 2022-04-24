@@ -17,8 +17,8 @@ public class TwitchMC extends JavaPlugin {
 		var configHolder = new ConfigHolder(this);
 		var config = getConfig();
 
-        var apiDomain = config.getString("api_domain");
-        var apiClient = new ApiClient(apiDomain, this.getDescription().getVersion());
+		var apiDomain = config.getString("api_domain");
+		var apiClient = new ApiClient(apiDomain, this.getDescription().getVersion());
 		var scheduler = new Scheduler(this);
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(apiClient, configHolder), this);
