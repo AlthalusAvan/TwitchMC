@@ -131,7 +131,6 @@ fabric.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -291,3 +290,5 @@ dist
 !.vscode/*.code-snippets
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,visualstudiocode,node,firebase
+plugin/bin/main
+plugin/lib

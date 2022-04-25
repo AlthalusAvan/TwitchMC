@@ -1,4 +1,4 @@
-name: Build and Publish Artifact
+name: Plugin Build
 
 on:
   pull_request:
@@ -27,14 +27,17 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+    - name: Validate Gradle Wrapper
+      uses: gradle/wrapper-validation-action@v1
+
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: build
+        arguments: jar
         build-root-directory: plugin
 
     - name: Publish Artifact
       uses: actions/upload-artifact@v3
       with:
         name: Package
-        path: plugin/out/TwitchMC.jar
+        path: plugin/build/libs

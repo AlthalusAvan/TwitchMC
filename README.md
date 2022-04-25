@@ -1,3 +1,5 @@
+[![Plugin Build](https://github.com/AlthalusAvan/TwitchMC/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/AlthalusAvan/TwitchMC/actions/workflows/gradle-publish.yml)
+
 # TwitchMC
 
 **Public control panel instance available at [TwitchMC.io](https://twitchmc.io)**
