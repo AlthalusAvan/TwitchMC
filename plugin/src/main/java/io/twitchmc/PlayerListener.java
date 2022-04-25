@@ -67,4 +67,8 @@ public class PlayerListener implements Listener {
 					"There was an error checking your access permissions - please try again later or contact a moderator.");
 		}
 	}
+
+	public void cleanCache() {
+		this.userCache.clearExpired();
+	}
 }
