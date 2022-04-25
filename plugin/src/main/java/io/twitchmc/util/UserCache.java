@@ -2,11 +2,11 @@ package io.twitchmc.util;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.UUID;
 
 public class UserCache {
-	private final HashMap<UUID, CacheEntry> cache = new HashMap<>();
+	private final Hashtable<UUID, CacheEntry> cache = new Hashtable<>();
 
 	/**
 	 * Check if a cache entry exists for this user & that it is not expired
