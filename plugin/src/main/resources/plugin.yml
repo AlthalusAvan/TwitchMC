@@ -1,0 +1,10 @@
+name: TwitchMC
+version: $version
+author: AlthalusAvan
+main: io.twitchmc.TwitchMC
+api-version: 1.18
+commands:
+  twitchmc:
+    description: Use various TwitchMC commands
+    usage: "/twitchmc [register] [code]"
+    permission: twitchmc.all
