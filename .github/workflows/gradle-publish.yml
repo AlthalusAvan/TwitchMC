@@ -19,7 +19,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 11
+    - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
@@ -31,9 +31,10 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build
+        build-root-directory: plugin
 
     - name: Publish Artifact
       uses: actions/upload-artifact@v3
       with:
         name: Package
-        path: out/TwitchMC.jar
+        path: plugin/out/TwitchMC.jar
