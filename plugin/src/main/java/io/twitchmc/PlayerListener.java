@@ -1,6 +1,7 @@
 package io.twitchmc;
 
 import io.twitchmc.http.ApiClient;
+import io.twitchmc.util.UserCache;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -12,10 +13,12 @@ import java.io.IOException;
 public class PlayerListener implements Listener {
 	private final ApiClient apiClient;
 	private final ConfigHolder configHolder;
+	private final UserCache userCache;
 
 	public PlayerListener(ApiClient apiClient, ConfigHolder configHolder) {
 		this.apiClient = apiClient;
 		this.configHolder = configHolder;
+		this.userCache = new UserCache();
 	}
 
 	@EventHandler
@@ -37,10 +40,16 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
+		if (userCache.isUserCached(uuid)) {
+			event.allow();
+			return;
+		}
+
 		try {
 			var result = apiClient.checkAccess(uuid.toString(), configHolder.getServerId());
 
 			if (result.access()) {
+				userCache.cacheUser(uuid);
 				event.allow();
 			} else {
 				var message = result.linked()
@@ -57,5 +66,9 @@ public class PlayerListener implements Listener {
 			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
 					"There was an error checking your access permissions - please try again later or contact a moderator.");
 		}
+	}
+
+	public void cleanCache() {
+		this.userCache.clearExpired();
 	}
 }

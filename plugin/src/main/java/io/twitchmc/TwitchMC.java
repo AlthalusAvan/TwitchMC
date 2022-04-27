@@ -21,10 +21,13 @@ public class TwitchMC extends JavaPlugin {
 		var apiClient = new ApiClient(apiDomain, this.getDescription().getVersion());
 		var scheduler = new Scheduler(this);
 
-		getServer().getPluginManager().registerEvents(new PlayerListener(apiClient, configHolder), this);
+		var playerListener = new PlayerListener(apiClient, configHolder);
+		getServer().getPluginManager().registerEvents(playerListener, this);
 
 		this.getCommand("twitchmc").setTabCompleter(new TwitchMCTabCompleter());
 		this.getCommand("twitchmc").setExecutor(new CommandRegister(apiClient, scheduler, configHolder));
+
+		this.getServer().getScheduler().runTaskTimerAsynchronously(this, playerListener::cleanCache, 0L, 6000L);
 	}
 
 	@Override
