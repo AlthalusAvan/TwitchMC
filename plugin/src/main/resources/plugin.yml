@@ -3,8 +3,14 @@ version: $version
 author: AlthalusAvan
 main: io.twitchmc.TwitchMC
 api-version: 1.18
+depend:
+  - Vault
 commands:
   twitchmc:
     description: Use various TwitchMC commands
     usage: "/twitchmc [register] [code]"
     permission: twitchmc.all
+permissions:
+  twitchmc.bypass:
+    description: Allows the player to bypass TwitchMC whitelist checks.
+    default: op
