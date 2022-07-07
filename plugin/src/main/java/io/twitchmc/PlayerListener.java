@@ -5,6 +5,7 @@ import io.twitchmc.util.UserCache;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -25,12 +26,20 @@ public class PlayerListener implements Listener {
 		this.permissionApi = Bukkit.getServicesManager().load(Permission.class);
 	}
 
+	private boolean canPlayerBypass(OfflinePlayer player) {
+		if (permissionApi != null) {
+			return permissionApi.playerHas(null, player, "twitchmc.bypass");
+		} else {
+			return player.isOp();
+		}
+	}
+
 	@EventHandler
 	public void onPlayerJoin(AsyncPlayerPreLoginEvent event) {
 		var uuid = event.getUniqueId();
 		var offlinePlayer = Bukkit.getOfflinePlayer(uuid);
 
-		if (permissionApi.playerHas(null, offlinePlayer, "twitchmc.bypass")) {
+		if (canPlayerBypass(offlinePlayer)) {
 			event.allow();
 			return;
 		}
