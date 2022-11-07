@@ -22,6 +22,8 @@ import {
 } from "@chakra-ui/react";
 import { useFirebaseAuth } from "../providers/authProvider";
 import Layout from "../components/layout";
+import { remoteConfig } from "../lib/firebase/config";
+import { getValue } from "firebase/remote-config";
 
 export default function Connect() {
   const user = useFirebaseAuth();
@@ -167,7 +169,9 @@ export default function Connect() {
                       If you haven't been given a code yet by a TwitchMC-enabled
                       server, you can use our test server here:
                     </Text>
-                    <Code p="2">198.20.126.92:25588</Code>
+                    <Code p="2">
+                      {getValue(remoteConfig, "testServerAddress").asString()}
+                    </Code>
                   </Flex>
                 </Box>
               </Flex>

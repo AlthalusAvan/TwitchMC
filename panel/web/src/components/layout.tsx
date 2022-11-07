@@ -2,7 +2,7 @@ import { Container } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useFirebaseAuth } from "../providers/authProvider";
-import NavBar from "./navbar";
+import NavBar from "./NavBar";
 
 interface LayoutProps {
   children: React.ReactElement;
