@@ -18,10 +18,16 @@ repositories {
         name = "spigotmc"
         url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
     }
+
+    maven {
+        name = "jitpack"
+        url = "https://jitpack.io"
+    }
 }
 
 dependencies {
     implementation "org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT"
+    implementation "com.github.MilkBowl:VaultAPI:1.7.1"
 }
 
 processResources {
