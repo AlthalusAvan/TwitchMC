@@ -29,6 +29,6 @@
   },
   "dependencies": {
     "firebase-functions": "^3.21.2",
-    "firebase-tools": "^10.6.0"
+    "firebase-tools": "^11.16.0"
   }
 }
