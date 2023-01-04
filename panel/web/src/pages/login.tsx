@@ -31,9 +31,10 @@ export default function Login() {
   const [searchParams] = useSearchParams();
 
   const code = searchParams.get("code");
-  const state = searchParams.get("state");
 
   const apiBaseUrl = getApiBaseUrl();
+
+  const autoContinue = searchParams.get("autoContinue");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,7 +50,13 @@ export default function Login() {
     if (user) {
       navigate(redirectTo, { replace: true });
     }
-  });
+  }, [user, navigate, redirectTo]);
+
+  useEffect(() => {
+    if (autoContinue) {
+      window.location.href = `${apiBaseUrl}/redirect?redirectTo=${redirectTo}`;
+    }
+  }, [apiBaseUrl, autoContinue, redirectTo]);
 
   useEffect(() => {
     if (code && token.length < 1) {
@@ -57,7 +64,7 @@ export default function Login() {
         setToken(token);
       });
     }
-  }, [code, state, token]);
+  }, [code, token]);
 
   const [authError, setAuthError] = useState<boolean | string>(false);
 

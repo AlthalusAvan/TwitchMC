@@ -4,8 +4,11 @@ import { Heading, Button, Link, Flex, Text, Container } from "@chakra-ui/react";
 import { Link as BrowserLink } from "react-router-dom";
 import Layout from "../components/layout";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { useFirebaseAuth } from "../providers/authProvider";
 
 export default function Home() {
+  const user = useFirebaseAuth();
+
   console.log(process.env.NODE_ENV);
 
   return (
@@ -34,9 +37,11 @@ export default function Home() {
             </Link>
             .
           </Text>
-          <Link as={BrowserLink} to="/login">
-            <Button>Login with Twitch</Button>
-          </Link>
+          {!user && (
+            <Link as={BrowserLink} to="/login?autoContinue=true">
+              <Button>Login with Twitch</Button>
+            </Link>
+          )}
         </Flex>
       </Container>
     </Layout>
