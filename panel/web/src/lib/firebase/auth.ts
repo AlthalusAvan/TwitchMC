@@ -10,7 +10,7 @@ import { app } from "./app";
 
 export const auth = getAuth(app);
 
-if (process.env.NODE_ENV === "development") {
+if (import.meta.env.NODE_ENV === "development") {
   connectAuthEmulator(auth, "http://localhost:9099");
 }
 

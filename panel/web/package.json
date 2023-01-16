@@ -21,14 +21,16 @@
     "web-vitals": "^2.1.2"
   },
   "devDependencies": {
-    "react-scripts": "^5.0.1"
+    "@vitejs/plugin-react": "^3.0.1",
+    "vite": "^4.0.4",
+    "vite-plugin-svgr": "^2.4.0",
+    "vite-tsconfig-paths": "^4.0.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "npx browserslist@latest -y --update-db && react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
+		"start": "vite",
+		"build": "tsc && vite build",
+		"serve": "vite preview"
+	},
   "eslintConfig": {
     "extends": [
       "react-app",

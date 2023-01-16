@@ -9,7 +9,7 @@ import { useFirebaseAuth } from "../providers/authProvider";
 export default function Home() {
   const user = useFirebaseAuth();
 
-  console.log(process.env.NODE_ENV);
+  console.log(import.meta.env.NODE_ENV);
 
   return (
     <Layout title="Home">
