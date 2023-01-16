@@ -25,10 +25,10 @@
   "homepage": "https://github.com/AlthalusAvan/TwitchMC#readme",
   "description": "",
   "devDependencies": {
-    "concurrently": "^7.0.0"
+    "concurrently": "^7.0.0",
+    "firebase-tools": "^11.20.0"
   },
   "dependencies": {
-    "firebase-functions": "^3.21.2",
-    "firebase-tools": "^11.16.0"
+    "firebase-functions": "^3.21.2"
   }
 }
