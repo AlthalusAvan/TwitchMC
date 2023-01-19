@@ -22,7 +22,7 @@ export const analytics = getAnalytics(app);
 
 export let appCheck: null | AppCheck = null;
 
-if (import.meta.env.NODE_ENV !== "development") {
+if (import.meta.env.DEV) {
   appCheck = initializeAppCheck(app, {
     provider: new ReCaptchaV3Provider(
       "6Le4ju8dAAAAAI3nfQfBJgubsKKRxmaw8IsQ8G5r"
