@@ -120,8 +120,50 @@ export async function checkAccess(
     });
   }
 
+  if (userHasAccess) {
+    let usersSeen = serverData.usersSeen;
+
+    if (!usersSeen) {
+      usersSeen = {};
+    }
+
+    usersSeen[uuid] = Date.now();
+
+    serversRef.doc(serverId).update({
+      usersSeen: usersSeen,
+    });
+
+    res.send({
+      access: true,
+      linked: true,
+    });
+    return;
+  }
+
+  if (
+    serverData.gracePeriod &&
+    serverData.usersSeen &&
+    serverData.usersSeen[uuid]
+  ) {
+    const lastSeen = serverData.usersSeen[uuid];
+    const diff = Date.now() - lastSeen;
+    const diffDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+    console.log(new Date(lastSeen), diff, diffDays);
+
+    if (diffDays <= serverData.gracePeriod) {
+      res.send({
+        access: true,
+        linked: true,
+        gracePeriod: serverData.gracePeriod - diffDays,
+      });
+      return;
+    }
+  }
+
   res.send({
-    access: userHasAccess,
+    access: false,
     linked: true,
   });
+  return;
 }

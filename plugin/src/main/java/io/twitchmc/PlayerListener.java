@@ -63,8 +63,13 @@ public class PlayerListener implements Listener {
 			var result = apiClient.checkAccess(uuid.toString(), configHolder.getServerId());
 
 			if (result.access()) {
-				userCache.cacheUser(uuid);
 				event.allow();
+
+				if (result.gracePeriod() == null) {
+					userCache.cacheUser(uuid);
+				} else {
+					Bukkit.getLogger().info("User " + uuid + " is in the grace period, with " + result.gracePeriod() + " days remaining.");
+				}
 			} else {
 				var message = result.linked()
 						? "You don't have an active subscription to the streamer that owns this server! Please renew " +
