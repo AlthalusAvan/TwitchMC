@@ -30,13 +30,13 @@ function NewServerModal({
   onClose,
   newServer,
 }: DeleteModalProps) {
-  const [server, setServer] = useState<any | null>(null);
+  const [server, setServer] = useState<MCServer | null>(null);
 
   useEffect(() => {
     const docRef = doc(db, "servers", newServer.id);
 
     onSnapshot(docRef, (snapshot) => {
-      setServer({ id: snapshot.id, ...snapshot.data() });
+      setServer({ id: snapshot.id, ...snapshot.data() } as MCServer);
     });
   }, [newServer]);
 

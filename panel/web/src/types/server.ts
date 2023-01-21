@@ -10,4 +10,5 @@ export interface MCServer {
   status: "Awaiting Verification" | "Verified";
   user: string;
   uuids: string[];
+  gracePeriod?: number;
 }

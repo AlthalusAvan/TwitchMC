@@ -9,14 +9,19 @@ import {
   Skeleton,
 } from "@chakra-ui/react";
 import { MCServer } from "../../types/server";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
 interface ServersTableProps {
   serverData: MCServer[] | null;
   deleteServer: (id: string, confirm?: boolean) => void;
+  editServer: (id: string) => void;
 }
 
-function ServersTable({ serverData, deleteServer }: ServersTableProps) {
+function ServersTable({
+  serverData,
+  deleteServer,
+  editServer,
+}: ServersTableProps) {
   return (
     <Table variant="simple" margin={0}>
       <TableCaption placement="top">
@@ -55,6 +60,12 @@ function ServersTable({ serverData, deleteServer }: ServersTableProps) {
                 {item.status}
               </Td>
               <Td isNumeric>
+                <EditIcon
+                  color="orange.500"
+                  mr={2}
+                  cursor="pointer"
+                  onClick={() => editServer(item.id)}
+                />
                 <DeleteIcon
                   color="red.500"
                   cursor="pointer"

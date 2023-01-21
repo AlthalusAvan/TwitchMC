@@ -9,6 +9,7 @@ import {
   where,
   orderBy,
   QuerySnapshot,
+  updateDoc,
 } from "@firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import {
@@ -27,6 +28,7 @@ import ServersTable from "../components/servers/serversTable";
 import { useFirebaseAuth } from "../providers/authProvider";
 import DeleteModal from "../components/servers/deleteModal";
 import NewServerModal from "../components/servers/newServerModal";
+import EditModal from "../components/servers/editModal";
 
 export default function Servers() {
   const user = useFirebaseAuth();
@@ -45,6 +47,10 @@ export default function Servers() {
   const [serverToDelete, setServerToDelete] = useState<MCServer | null>(null);
   const deleteModalDisclosure = useDisclosure();
 
+  // Controllers for Edit Modal
+  const [serverToEdit, setServerToEdit] = useState<MCServer | null>(null);
+  const editModalDisclosure = useDisclosure();
+
   // Get server data on load
   useEffect(() => {
     async function getServers() {
@@ -55,7 +61,7 @@ export default function Servers() {
           where("user", "==", user.uid),
           orderBy("createdAt", "asc")
         );
-        onSnapshot(q, (querySnapshot: QuerySnapshot) => {
+        onSnapshot(q, (querySnapshot) => {
           const data: any[] = [];
 
           querySnapshot.forEach((doc) => {
@@ -113,6 +119,34 @@ export default function Servers() {
     }
   }
 
+  function editServer(id: string) {
+    if (serverData) {
+      const server = serverData?.find((item) => item.id === id);
+
+      if (server) {
+        setServerToEdit(server);
+        editModalDisclosure.onOpen();
+      }
+    }
+  }
+
+  function updateServer(
+    id: string,
+    data: MCServer,
+    callback: (success: boolean) => void
+  ) {
+    const docRef = doc(db, "servers", id);
+
+    updateDoc(docRef, { ...data })
+      .then(() => {
+        callback(true);
+      })
+      .catch((error) => {
+        console.error(error);
+        callback(false);
+      });
+  }
+
   return (
     <Layout requireAuth title="Manage Servers">
       <Container maxW="4xl">
@@ -120,7 +154,11 @@ export default function Servers() {
           <Heading as="h1" size="lg" textAlign="center">
             Manage Servers
           </Heading>
-          <ServersTable serverData={serverData} deleteServer={deleteServer} />
+          <ServersTable
+            serverData={serverData}
+            deleteServer={deleteServer}
+            editServer={editServer}
+          />
           <form onSubmit={(e) => addServer(e)}>
             <Flex gap={2}>
               <Input
@@ -149,6 +187,14 @@ export default function Servers() {
               deleteServer={deleteServer}
             />
           )}
+          {serverToEdit && (
+            <EditModal
+              {...editModalDisclosure}
+              server={serverToEdit}
+              updateServer={updateServer}
+            />
+          )}
+
           {newServer && (
             <NewServerModal {...newServerDisclosure} newServer={newServer} />
           )}
