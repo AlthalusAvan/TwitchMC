@@ -1,12 +1,14 @@
-import React from "react";
+import { lazy } from "react";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import About from "./pages/about";
-import Connect from "./pages/connect";
+
 import Home from "./pages/home";
-import Login from "./pages/login";
-import LogOut from "./pages/logout";
-import Servers from "./pages/servers";
+const About = lazy(() => import("./pages/about"));
+const Connect = lazy(() => import("./pages/connect"));
+const Login = lazy(() => import("./pages/login"));
+const LogOut = lazy(() => import("./pages/logout"));
+const Servers = lazy(() => import("./pages/servers"));
+
 import { FirebaseAuthProvider } from "./providers/authProvider";
 
 export default function App() {
