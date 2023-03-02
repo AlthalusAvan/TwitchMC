@@ -26,7 +26,7 @@
   "description": "",
   "devDependencies": {
     "concurrently": "^7.0.0",
-    "firebase-tools": "^11.20.0"
+    "firebase-tools": "^11.22.0"
   },
   "dependencies": {
     "firebase-functions": "^3.21.2"
