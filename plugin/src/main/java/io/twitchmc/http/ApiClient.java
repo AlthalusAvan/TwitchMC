@@ -12,14 +12,18 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 
 public class ApiClient {
+	private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(15);
+
 	private final Gson gson = new GsonBuilder()
 			.registerTypeAdapterFactory(new RecordTypeAdapterFactory())
 			.create();
 
 	private final HttpClient httpClient = HttpClient.newBuilder()
 			.version(HttpClient.Version.HTTP_2)
+			.connectTimeout(Duration.ofSeconds(15))
 			.build();
 
 	private final String apiDomain;
@@ -39,6 +43,7 @@ public class ApiClient {
 				.uri(URI.create(apiDomain + "/registerServer"))
 				.setHeader("User-Agent", userAgent)
 				.header("Content-Type", "application/x-www-form-urlencoded")
+				.timeout(REQUEST_TIMEOUT)
 				.build();
 
 		var response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
@@ -57,6 +62,7 @@ public class ApiClient {
 				.uri(URI.create(apiDomain + "/checkAccess"))
 				.setHeader("User-Agent", userAgent)
 				.header("Content-Type", "application/x-www-form-urlencoded")
+				.timeout(REQUEST_TIMEOUT)
 				.build();
 
 		var response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
