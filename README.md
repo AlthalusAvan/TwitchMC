@@ -37,7 +37,7 @@ Overall, the T3 stack gives us more direct control over our Database, API and ho
 
 ### Can I host my own version?
 
-Yep, 100% - clone the repo and check out the [T3 Documentation](https://create.t3.gg/en/deployment) to get going. We used [Railway](https://railway.app/) for a Postgres database, and [Vercel](https://vercel.com/) to host the app and API.
+Yep, 100% - clone the repo and check out the [T3 Documentation](https://create.t3.gg/en/deployment) to get going. We used [Vercel](https://vercel.com/) to host the app, API and Postgres database on the public site.
 
 ### What's on the roadmap for future releases?
 
