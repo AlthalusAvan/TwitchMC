@@ -17,7 +17,9 @@ type TwitchSubFail = {
 };
 
 const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
-  const serverId = req.body.serverId;
+  // Check required params
+
+  const serverId: string | undefined | null = req.body.serverId;
   if (!serverId) {
     return res.send({
       access: false,
@@ -26,6 +28,16 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
+  const uuid: string | undefined | null = req.body.uuid;
+  if (!uuid) {
+    return res.send({
+      access: false,
+      error: "UUID_MISSING",
+      description: "Please provide a valid UUID",
+    });
+  }
+
+  // Get the server details
   const server = await prisma.server.findUnique({
     where: {
       id: serverId,
@@ -40,30 +52,24 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
-  const uuid: string | undefined | null = req.body.uuid;
-  if (!uuid) {
-    return res.send({
-      access: false,
-      error: "UUID_MISSING",
-      description: "Please provide a valid UUID",
-    });
-  }
-
+  // Get the user details
   const mcUser = await prisma.minecraftUser.findUnique({
     where: {
       id: uuid,
     },
   });
 
+  // If the user doesn't already exist
   if (!mcUser) {
+    // Check if there is a token in the database
     const token = await prisma.uUIDVerificationToken.findUnique({
       where: {
         UUID: uuid,
       },
     });
 
+    // If not create a new token
     if (!token) {
-      // create a new token in the database
       const newToken = await prisma.uUIDVerificationToken.create({
         data: {
           UUID: uuid,
@@ -85,12 +91,14 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
+  // Get the User object
   const user = await prisma.user.findUnique({
     where: {
       id: mcUser.userId,
     },
   });
 
+  // This shouldn't happen, if it does the database has had some issues
   if (!user) {
     return res.send({
       access: false,
@@ -109,6 +117,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
+  // This also shouldn't ever happen
   if (!serverOwner) {
     return res.send({
       access: false,
@@ -118,6 +127,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
+  // Get the account details for the server owner and user (for Twitch API)
   const ownerAccount = await prisma.account.findUnique({
     where: {
       userId: serverOwner?.id,
@@ -130,6 +140,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
+  // This also shouldn't ever happen
   if (!ownerAccount || !userAccount) {
     return res.send({
       access: false,
@@ -139,15 +150,16 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
+  // Another thing that should never happen
   if (!userAccount.access_token || !userAccount.refresh_token) {
     return res.send({
       access: false,
       error: "TOKEN_ERROR",
-      description:
-        "There was an error with your account - please go to TwitchMc.io and log in again.",
+      description: `There was an error with your account - please go to ${process.env.NEXTAUTH_URL} and log in again.`,
     });
   }
 
+  // We're required to check if OAuth tokens are valid for every request - but this means we don't have to constantly refresh the app token
   const valid = await fetch("https://id.twitch.tv/oauth2/validate", {
     method: "GET",
     headers: {
@@ -155,8 +167,8 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
+  // If the token is invalid, refresh it
   if (valid.status === 401) {
-    // refresh token
     const refresh = await fetch("https://id.twitch.tv/oauth2/token", {
       method: "POST",
       headers: {
@@ -172,15 +184,16 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const refreshResponse = await refresh.json();
 
+    // If the refresh token is invalid, the user needs to re-authenticate
     if ("error" in refreshResponse) {
       return res.send({
         access: false,
         error: "REFRESH_ERROR",
-        description:
-          "There was an error when trying to refresh your Twitch token",
+        description: `There was an error when trying to refresh your Twitch token - please go to ${process.env.NEXTAUTH_URL} and log in again`,
       });
     }
 
+    // Update the user account with the new tokens
     userAccount = await prisma.account.update({
       where: {
         id: userAccount?.id,
@@ -193,6 +206,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
+  // Check if the user is subscribed to the server owner
   const getSubscription = await fetch(
     `https://api.twitch.tv/helix/subscriptions/user?broadcaster_id=${ownerAccount?.providerAccountId}&user_id=${userAccount?.providerAccountId}`,
     {
