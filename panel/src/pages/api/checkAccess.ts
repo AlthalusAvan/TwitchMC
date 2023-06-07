@@ -19,12 +19,11 @@ type TwitchSubFail = {
 const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
   const serverId = req.body.serverId;
   if (!serverId) {
-    res.send({
+    return res.send({
       access: false,
       error: "SERVER_ID_MISSING",
       description: "Please provide a valid Server ID",
     });
-    return;
   }
 
   const server = await prisma.server.findUnique({
@@ -34,22 +33,20 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (!server) {
-    res.send({
+    return res.send({
       access: false,
       error: "INVALID_SERVER",
       description: "There is no server registered with the provided ID",
     });
-    return;
   }
 
   const uuid: string | undefined | null = req.body.uuid;
   if (!uuid) {
-    res.send({
+    return res.send({
       access: false,
       error: "UUID_MISSING",
       description: "Please provide a valid UUID",
     });
-    return;
   }
 
   const mcUser = await prisma.minecraftUser.findUnique({
@@ -74,22 +71,18 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
         },
       });
 
-      res.send({
+      return res.send({
         access: false,
         linked: false,
         code: newToken.code,
       });
-
-      return;
     }
 
-    res.send({
+    return res.send({
       access: false,
       linked: false,
       code: token.code,
     });
-
-    return;
   }
 
   const user = await prisma.user.findUnique({
@@ -99,7 +92,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (!user) {
-    res.send({
+    return res.send({
       access: false,
       error: "USER_NOT_FOUND",
       description:
@@ -117,7 +110,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (!serverOwner) {
-    res.send({
+    return res.send({
       access: false,
       error: "SERVER_OWNER_NOT_FOUND",
       description:
@@ -138,7 +131,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (!ownerAccount || !userAccount) {
-    res.send({
+    return res.send({
       access: false,
       error: "ACCOUNT_ERROR",
       description:
@@ -146,11 +139,19 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
-  // Check if user's token is still valid
+  if (!userAccount.access_token || !userAccount.refresh_token) {
+    return res.send({
+      access: false,
+      error: "TOKEN_ERROR",
+      description:
+        "There was an error with your account - please go to TwitchMc.io and log in again.",
+    });
+  }
+
   const valid = await fetch("https://id.twitch.tv/oauth2/validate", {
     method: "GET",
     headers: {
-      Authorization: `OAuth ${userAccount?.access_token}`,
+      Authorization: `OAuth ${userAccount.access_token}`,
     },
   });
 
@@ -163,7 +164,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
       },
       body: JSON.stringify({
         grant_type: "refresh_token",
-        refresh_token: userAccount?.refresh_token,
+        refresh_token: userAccount.refresh_token,
         client_id: process.env.TWITCH_CLIENT_ID,
         client_secret: process.env.TWITCH_CLIENT_SECRET,
       }),
@@ -172,13 +173,12 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     const refreshResponse = await refresh.json();
 
     if ("error" in refreshResponse) {
-      res.send({
+      return res.send({
         access: false,
         error: "REFRESH_ERROR",
         description:
           "There was an error when trying to refresh your Twitch token",
       });
-      return;
     }
 
     userAccount = await prisma.account.update({

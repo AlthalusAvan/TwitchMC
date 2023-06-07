@@ -292,3 +292,4 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,visualstudiocode,node,firebase
 plugin/bin/main
 plugin/lib
+.vercel
