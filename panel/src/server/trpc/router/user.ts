@@ -1,27 +1,25 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 
-export const mcUserRouter = router({
-  getMcUser: protectedProcedure.query(({ ctx }) => {
-    const mcUser = ctx.prisma.minecraftUser.findUnique({
+export const userRouter = router({
+  getUser: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.user.findUnique({
       where: {
-        userId: ctx.session.user.id,
+        id: ctx.session.user.id,
       },
     });
-
-    return mcUser;
   }),
-  connectMcUser: protectedProcedure
+  connectMcAccount: protectedProcedure
     .input(z.object({ code: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const mcUser = await ctx.prisma.minecraftUser.findUnique({
+      const user = await ctx.prisma.user.findUnique({
         where: {
-          userId: ctx.session.user.id,
+          id: ctx.session.user.id,
         },
       });
 
-      if (mcUser) {
-        return mcUser;
+      if (user && user.UUID) {
+        return user;
       }
 
       const token = await ctx.prisma.uUIDVerificationToken.findUnique({
@@ -34,10 +32,12 @@ export const mcUserRouter = router({
         throw new Error("Invalid code");
       }
 
-      const newUser = await ctx.prisma.minecraftUser.create({
+      const newUser = await ctx.prisma.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
         data: {
-          id: token.UUID,
-          userId: ctx.session.user.id,
+          UUID: token.UUID,
         },
       });
 

@@ -53,14 +53,24 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   // Get the user details
-  const mcUser = await prisma.minecraftUser.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
-      id: uuid,
+      UUID: uuid,
     },
   });
 
+  // This shouldn't happen, if it does the database has had some issues
+  if (!user) {
+    return res.send({
+      access: false,
+      error: "USER_NOT_FOUND",
+      description:
+        "There was an internal error when trying to find this user record based on this UUID",
+    });
+  }
+
   // If the user doesn't already exist
-  if (!mcUser) {
+  if (!user.UUID) {
     // Check if there is a token in the database
     const token = await prisma.uUIDVerificationToken.findUnique({
       where: {
@@ -89,25 +99,6 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
       linked: false,
       code: token.code,
     });
-  }
-
-  // Get the User object
-  const user = await prisma.user.findUnique({
-    where: {
-      id: mcUser.userId,
-    },
-  });
-
-  // This shouldn't happen, if it does the database has had some issues
-  if (!user) {
-    return res.send({
-      access: false,
-      error: "USER_NOT_FOUND",
-      description:
-        "There was an internal error when trying to find this user record based on this UUID",
-    });
-
-    return;
   }
 
   // Check if user is subscribed to the server owner on Twitch

@@ -1,4 +1,4 @@
-import { type MinecraftUser } from "@prisma/client";
+import { type User } from "@prisma/client";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -19,20 +19,20 @@ const Connect: NextPage = () => {
   }, [sessionData, nav, sessionStatus]);
 
   const [error, setError] = useState("");
-  const [mcUser, setMcUser] = useState<MinecraftUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  trpc.mcUser.getMcUser.useQuery(undefined, {
+  trpc.user.getUser.useQuery(undefined, {
     onSuccess: (data) => {
       setLoading(false);
-      setMcUser(data);
+      setUser(data);
     },
   });
 
-  const connectMutation = trpc.mcUser.connectMcUser.useMutation({
+  const connectMutation = trpc.user.connectMcAccount.useMutation({
     onSuccess: (data) => {
       setLoading(false);
-      setMcUser(data);
+      setUser(data);
     },
     onError: (error) => {
       setLoading(false);
@@ -55,7 +55,7 @@ const Connect: NextPage = () => {
     <Layout title="Connect">
       <div className="container flex w-full flex-col items-center justify-center gap-4 px-4 py-16">
         {loading && <LoadingSpinner />}
-        {mcUser ? (
+        {user && user.UUID ? (
           <h2 className="text-2xl">
             You have connected your account successfully!
           </h2>
