@@ -60,7 +60,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   // If the user doesn't already exist
-  if (user) {
+  if (!user) {
     // Check if there is a token in the database
     const token = await prisma.uUIDVerificationToken.findUnique({
       where: {
