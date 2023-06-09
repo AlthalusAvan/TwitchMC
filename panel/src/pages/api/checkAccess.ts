@@ -59,18 +59,8 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  // This shouldn't happen, if it does the database has had some issues
-  if (!user) {
-    return res.send({
-      access: false,
-      error: "USER_NOT_FOUND",
-      description:
-        "There was an internal error when trying to find this user record based on this UUID",
-    });
-  }
-
   // If the user doesn't already exist
-  if (!user.UUID) {
+  if (user) {
     // Check if there is a token in the database
     const token = await prisma.uUIDVerificationToken.findUnique({
       where: {
