@@ -205,6 +205,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     await getSubscription.json();
 
   if ("error" in subscription) {
+    console.error(`Error in subscription fetch: ${subscription.error}`);
     res.send({
       access: false,
       linked: true,
