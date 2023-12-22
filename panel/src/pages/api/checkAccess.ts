@@ -149,24 +149,24 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   // If the token is invalid, refresh it
-  if (valid.status === 401) {
+  if (!valid.ok) {
     const refresh = await fetch("https://id.twitch.tv/oauth2/token", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: JSON.stringify({
+      body: new URLSearchParams({
         grant_type: "refresh_token",
         refresh_token: userAccount.refresh_token,
-        client_id: process.env.TWITCH_CLIENT_ID,
-        client_secret: process.env.TWITCH_CLIENT_SECRET,
+        client_id: process.env.TWITCH_CLIENT_ID!,
+        client_secret: process.env.TWITCH_CLIENT_SECRET!,
       }),
     });
 
     const refreshResponse = await refresh.json();
 
     // If the refresh token is invalid, the user needs to re-authenticate
-    if ("error" in refreshResponse) {
+    if (!refresh.ok) {
       return res.send({
         access: false,
         error: "REFRESH_ERROR",
