@@ -1,5 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "../../server/db/client";
+import { env } from "../../env/server.mjs";
 
 type TwitchSubSuccess = {
   data: Array<{
@@ -136,7 +137,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.send({
       access: false,
       error: "TOKEN_ERROR",
-      description: `There was an error with your account - please go to ${process.env.NEXTAUTH_URL} and log in again.`,
+      description: `There was an error with your account - please go to ${env.NEXTAUTH_URL} and log in again.`,
     });
   }
 
@@ -158,8 +159,8 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
       body: new URLSearchParams({
         grant_type: "refresh_token",
         refresh_token: userAccount.refresh_token,
-        client_id: process.env.TWITCH_CLIENT_ID!,
-        client_secret: process.env.TWITCH_CLIENT_SECRET!,
+        client_id: env.TWITCH_CLIENT_ID,
+        client_secret: env.TWITCH_CLIENT_SECRET,
       }),
     });
 
@@ -170,7 +171,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
       return res.send({
         access: false,
         error: "REFRESH_ERROR",
-        description: `There was an error when trying to refresh your Twitch token - please go to ${process.env.NEXTAUTH_URL} and log in again`,
+        description: `There was an error when trying to refresh your Twitch token - please go to ${env.NEXTAUTH_URL} and log in again`,
       });
     }
 
@@ -195,7 +196,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       headers: {
-        "Client-ID": process.env.TWITCH_CLIENT_ID,
+        "Client-ID": env.TWITCH_CLIENT_ID,
         Authorization: `Bearer ${userAccount?.access_token}`,
       },
     }
