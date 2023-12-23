@@ -15,6 +15,20 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async signIn({ account }) {
+      if (account) {
+        await prisma.account.update({
+          where: {
+            provider_providerAccountId: {
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+            }
+          },
+          data: account,
+        })
+      }
+      return true;
+    }
   },
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
