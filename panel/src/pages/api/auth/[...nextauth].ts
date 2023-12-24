@@ -2,6 +2,7 @@ import NextAuth, { type NextAuthOptions } from "next-auth";
 import TwitchProvider from "next-auth/providers/twitch";
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { Prisma } from "@prisma/client";
 
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
@@ -17,15 +18,26 @@ export const authOptions: NextAuthOptions = {
     },
     async signIn({ account }) {
       if (account) {
-        await prisma.account.update({
-          where: {
-            provider_providerAccountId: {
-              provider: account.provider,
-              providerAccountId: account.providerAccountId,
+        try {
+          await prisma.account.update({
+            where: {
+              provider_providerAccountId: {
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+              }
+            },
+            data: account,
+          })
+        } catch (e) {
+          if (e instanceof Prisma.PrismaClientKnownRequestError) {
+            // No account to update, continue
+            if (e.code === "P2025") {
+              return true;
             }
-          },
-          data: account,
-        })
+          }
+
+          throw e;
+        }
       }
       return true;
     }
