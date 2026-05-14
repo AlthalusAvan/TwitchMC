@@ -2,6 +2,8 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "../../server/db/client";
 import { env } from "../../env/server.mjs";
 
+const rootUrl = env.NEXTAUTH_URL;
+
 type TwitchSubSuccess = {
   data: Array<{
     broadcaster_id: string;
@@ -63,7 +65,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
   // If the user doesn't already exist
   if (!user) {
     // Check if there is a token in the database
-    const token = await prisma.uUIDVerificationToken.findUnique({
+    let token = await prisma.uUIDVerificationToken.findUnique({
       where: {
         UUID: uuid,
       },
@@ -71,17 +73,11 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // If not create a new token
     if (!token) {
-      const newToken = await prisma.uUIDVerificationToken.create({
+      token = await prisma.uUIDVerificationToken.create({
         data: {
           UUID: uuid,
           code: Math.random().toString(36).substring(2, 8).toUpperCase(),
         },
-      });
-
-      return res.send({
-        access: false,
-        linked: false,
-        code: newToken.code,
       });
     }
 
@@ -89,6 +85,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
       access: false,
       linked: false,
       code: token.code,
+      description: `You need to link your Twitch account in order to play on this server! Please visit ${rootUrl}/connect and use code: ${token.code}`,
     });
   }
 
@@ -137,7 +134,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.send({
       access: false,
       error: "TOKEN_ERROR",
-      description: `There was an error with your account - please go to ${env.NEXTAUTH_URL} and log in again.`,
+      description: `There was an error with your account - please go to ${rootUrl} and log in again.`,
     });
   }
 
@@ -171,7 +168,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
       return res.send({
         access: false,
         error: "REFRESH_ERROR",
-        description: `There was an error when trying to refresh your Twitch token - please go to ${env.NEXTAUTH_URL} and log in again`,
+        description: `There was an error when trying to refresh your Twitch token - please go to ${rootUrl} and log in again`,
       });
     }
 
@@ -210,6 +207,7 @@ const checkAccess = async (req: NextApiRequest, res: NextApiResponse) => {
     res.send({
       access: false,
       linked: true,
+      description: `You don't have an active subscription to the streamer that owns this server! Please renew your subscription, or visit ${rootUrl} if you need to link a different account.`,
     });
     return;
   }

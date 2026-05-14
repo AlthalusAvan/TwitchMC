@@ -5,6 +5,8 @@ main: io.twitchmc.TwitchMC
 api-version: 1.18
 depend:
   - Vault
+softdepend:
+  - floodgate
 commands:
   twitchmc:
     description: Use various TwitchMC commands

@@ -7,20 +7,23 @@ import io.twitchmc.ConfigHolder;
 import io.twitchmc.http.ApiClient;
 import io.twitchmc.model.ServerRegisterResponse;
 import io.twitchmc.scheduler.Scheduler;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import java.util.logging.Logger;
 
 public class CommandRegister implements CommandExecutor {
 	private final ApiClient apiClient;
 	private final Scheduler scheduler;
 	private final ConfigHolder configHolder;
+	private final Logger logger;
 
-	public CommandRegister(ApiClient apiClient, Scheduler scheduler, ConfigHolder configHolder) {
+	public CommandRegister(ApiClient apiClient, Scheduler scheduler, ConfigHolder configHolder, Logger logger) {
 		this.apiClient = apiClient;
 		this.scheduler = scheduler;
 		this.configHolder = configHolder;
+		this.logger = logger;
 	}
 
 	@Override
@@ -64,7 +67,7 @@ public class CommandRegister implements CommandExecutor {
 				if (result.error() != null) {
 					var error = result.error();
 
-					Bukkit.getLogger().warning("Error registering server with TwitchMC, code: %s - description: %s"
+					logger.warning("Error registering server with TwitchMC, code: %s - description: %s"
 							.formatted(error.code(), error.description()));
 
 					sender.sendMessage("Error registering server with TwitchMC - %s".formatted(error.description()));

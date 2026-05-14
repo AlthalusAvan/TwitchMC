@@ -1,26 +1,32 @@
 package io.twitchmc;
 
+import io.twitchmc.floodgate.PlayerMap;
 import io.twitchmc.http.ApiClient;
 import io.twitchmc.util.UserCache;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PlayerListener implements Listener {
 	private final ApiClient apiClient;
 	private final ConfigHolder configHolder;
+	private final Logger logger;
+	private final PlayerMap playerMap;
 	private final UserCache userCache;
 	private Permission permissionApi;
 
-	public PlayerListener(ApiClient apiClient, ConfigHolder configHolder) {
+	public PlayerListener(ApiClient apiClient, ConfigHolder configHolder, Logger logger, PlayerMap playerMap) {
 		this.apiClient = apiClient;
 		this.configHolder = configHolder;
+		this.logger = logger;
+		this.playerMap = playerMap;
 		this.userCache = new UserCache();
 
 		this.permissionApi = Bukkit.getServicesManager().load(Permission.class);
@@ -36,7 +42,17 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(AsyncPlayerPreLoginEvent event) {
-		var uuid = event.getUniqueId();
+		try {
+			this.tryPlayerJoin(event);
+		} catch (Throwable t) {
+			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+					"Error checking access permissions - please contact a server admin");
+			throw t;
+		}
+	}
+
+	public void tryPlayerJoin(AsyncPlayerPreLoginEvent event) {
+		var uuid = playerMap.getMappedUUID(event.getUniqueId());
 		var offlinePlayer = Bukkit.getOfflinePlayer(uuid);
 
 		if (canPlayerBypass(offlinePlayer)) {
@@ -44,7 +60,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		Bukkit.getLogger().info("%s%s has joined, checking access".formatted(ChatColor.BLUE, uuid));
+		logger.info("%s has joined, checking access".formatted(uuid));
 
 		boolean isServerVerified = !configHolder.getServerId().isBlank();
 
@@ -66,16 +82,20 @@ public class PlayerListener implements Listener {
 				userCache.cacheUser(uuid);
 				event.allow();
 			} else {
-				var message = result.linked()
-						? "You don't have an active subscription to the streamer that owns this server! Please renew " +
-						"your subscription, or visit https://twitchmc.io if you need to link a different account."
-						: "You need to link your Twitch account in order to play on this server! Please " +
-						"visit https://twitchmc.io/connect and use code: %s".formatted(result.code());
+				var message = result.description();
+				if (message == null) {
+					logger.warning("Missing error message from server for access = false response");
+					message = "Missing error message from server - please report this to TwitchMC";
+				}
+
+				if (result.hasError()) {
+					logger.info("Login for %s failed - %s: %s".formatted(uuid, result.error(), message));
+				}
 
 				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, message);
 			}
 		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
+			logger.log(Level.WARNING, "Failed to check access permissions", e);
 
 			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
 					"There was an error checking your access permissions - please try again later or contact a moderator.");
